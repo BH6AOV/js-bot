@@ -1,51 +1,81 @@
 import * as cq from './CqStore';
+import api from './Api';
 
-export default function connectWs(): Promise<any> {
-    const ws = new WebSocket(cq.config.wsUrl);
-    ws.addEventListener('close', () => cq.abort('WebSocket Event 服务非正常关闭'));
-    ws.addEventListener('error', () => cq.abort('WebSocket Event 服务连接错误'));
+let ws: WebSocket | null = null;
+
+const abort1 = () => cq.abort('WebSocket Event 服务非正常关闭');
+
+const abort2 = () => cq.abort('WebSocket Event 服务连接错误');
+
+export default function connectWs() {
+    if (ws) {
+        ws.removeEventListener('close', abort1);
+        ws.removeEventListener('error', abort2);
+        ws.removeEventListener('message', onWsData);
+        ws.close();
+    }
+
+    ws = new WebSocket(cq.config.wsUrl);
+    ws.addEventListener('close', abort1);
+    ws.addEventListener('error', abort2);
     ws.addEventListener('message', onWsData);
-    return new Promise(resolve => ws.addEventListener('open', () => resolve()));
 }
 
-function onWsData(event: any) {
+async function onWsData(event: any) {
     const data = JSON.parse(event.data);
     const s = JSON.stringify(data, null, '    ');
     cq.debug(s);
     console.debug(s);
 
     if (data.post_type === 'message') {
-        if (onMessageData(data)) {
+        const r = await onMessageData(data);
+        if (r) {
             return;
         }
-        // other
     }
 
-    // other event
+    try {
+        await cq.handler.onCqEvent(data);
+    } catch (err) {
+        console.error(err);
+        cq.popModal(`handler.onCqEvent 出错：${err.message}`);
+    }
 }
 
-function onMessageData(data: any): boolean {
+async function onMessageData(data: any): Promise<boolean> {
     const { message_type, user_id, group_id, sender, raw_message } = data;
 
     if (message_type === 'private') {
-        var contact = cq.buddies.get(String(user_id));
-        if (!contact) {
-            return false;
-        }
-        var from = contact.name;
+        var from = sender.remark || sender.nickname;
+        var contact = cq.buddies.getOrInsert(String(user_id), from);
     } else if (message_type === 'group') {
-        contact = cq.groups.get(String(group_id));
-        if (!contact) {
-            return false;
-        }
         from = sender.card || sender.nickname || sender.user_id;
+        const groupQQ = String(group_id);
+        const _contact = cq.groups.get(groupQQ);
+        if (_contact) {
+            contact = _contact;
+        } else {
+            try {
+                var { group_name } = await api('get_group_inf', { group_id, no_cache: true });
+            } catch (err) {
+                console.error(err);
+                cq.popModal(err.message);
+                group_name = groupQQ;
+            }
+            contact = cq.groups.getOrInsert(groupQQ, group_name);
+        }
     } else {
         return false;
     }
 
     const message = contact.addMessage(from, raw_message, true);
 
-    setImmediate(() => cq.handler.onMessage(contact!, message));
+    try {
+        await cq.handler.onMessage(contact, message);
+    } catch (err) {
+        console.error(err);
+        cq.popModal(`handler.onMessage 出错：${err.message}`);
+    }
 
     return true;
 }

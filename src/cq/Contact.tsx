@@ -4,18 +4,21 @@ import * as cq from './CqStore';
 export default class Contact {
     readonly type: ContactType;
     readonly qq: string;
-    readonly name: string;
     readonly messages: IMessage[] = [];
-    get title() { return `${this.name}（${this.qq}）`; }
+    name: string;
     editingText: string = '';
     sending: boolean = false;
     lastModifiedTime: string = cq.cuid();
+
+    toString() {
+        const typeName = (this.type === cq.NOTYPE) ? '' : cq.TABLE_NAMES[this.type];
+        return `${typeName} ${this.name}（${this.qq}）`;
+    }
 
     constructor(type: ContactType, qq: string, name: string) {
         this.type = type;
         this.qq = qq;
         this.name = name;
-        cq.tables[type].add(this);
     }
 
     clear() {
@@ -27,7 +30,7 @@ export default class Contact {
         this.lastModifiedTime = cq.cuid();
     }
 
-    send = async (text = this.editingText): Promise<any> => {
+    send = async (text = this.editingText) => {
         if (!text) {
             return;
         }
@@ -35,11 +38,7 @@ export default class Contact {
         if (this === cq.cqConsole) {
             this.editingText = '';
             this.addMessage(this.name, text, false);
-            try {
-                await (window as any).eval(text);
-            } catch (err) {
-                cq.error(err.message);
-            }
+            cq._eval(text);
             return;
         }
 
@@ -61,7 +60,7 @@ export default class Contact {
         this.addMessage(this.name, text, false);
     }
 
-    _send = async (): Promise<any> => {
+    _send = async () => {
         try {
             await this.send(this.editingText);
         } catch (err) {

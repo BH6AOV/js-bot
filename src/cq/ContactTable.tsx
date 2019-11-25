@@ -16,10 +16,22 @@ export default class ContactTable {
         this.type = type;
     }
 
-    add(c: Contact) {
+    getOrInsert(qq: string, name: string): Contact {
+        let c = this._dict.get(qq);
+        if (c) {
+            if (c.name !== name) {
+                c.name = name;
+                c.lastModifiedTime = cq.cuid();
+                this.lastModifiedTime = cq.cuid();
+            }
+            return c;
+        }
+
+        c = new Contact(this.type, qq, name);
         this._list.push(c);
         this._dict.set(c.qq, c);
         this.lastModifiedTime = cq.cuid();
+        return c;
     }
 
     unshift(c: Contact) {
@@ -47,7 +59,10 @@ export default class ContactTable {
         this.lastModifiedTime = cq.cuid();
     }
 
-    get(qq: string): Contact | undefined {
-        return this._dict.get(qq);
+    get(qqOrIndex: string | number): Contact | undefined {
+        if (typeof(qqOrIndex) === 'string') {
+            return this._dict.get(qqOrIndex);
+        }
+        return this._list[qqOrIndex];
     }
 }

@@ -51,6 +51,7 @@
             "location",
             "confirm"
         ],
-        "no-unused-expression": false
+        "no-unused-expression": false,
+        "no-unnecessary-initializer": false
     }
 }

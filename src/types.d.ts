@@ -12,3 +12,8 @@ interface IMessage {
 type ContactType = 0 | 1 | 2;
 
 type LogLevel = 0 | 1 | 2 | 3;
+
+interface IHandler {
+    onMessage: (c: Contact, m: Message) => any,
+    onCqEvent: (data: any) => any,
+}

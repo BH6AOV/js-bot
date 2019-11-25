@@ -41,7 +41,8 @@
             "error",
             "always"
         ],
-        "global-require": "error"
+        "global-require": "error",
+        "jsx-no-target-blank": "off"
     },
     "globals": {
         "log": false,

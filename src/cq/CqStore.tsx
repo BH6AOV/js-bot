@@ -1,8 +1,9 @@
 import Contact from './Contact';
 import ContactTable from './ContactTable';
-import api from './Api';
+import _api from './Api';
 import connectWs from './Ws';
 import * as libs from '../common';
+import * as _ai from '../ai';
 
 // constants
 export const BUDDY = 0;
@@ -32,6 +33,30 @@ export const sleep = libs.sleep;
 export const cuid = libs.cuid;
 export const nullFunc = libs.nullFunc;
 
+// ai
+export const ai = _ai;
+
+// api
+export const api = _api;
+
+// eval
+let ans;
+
+export async function _eval(s: string) {
+    let _ans = undefined;
+    try {
+        _ans = await (window as any).eval(`with(cq){${s}}`);
+    } catch (err) {
+        error(err.message);
+        return;
+    }
+
+    ans = _ans;
+    if (ans !== undefined) {
+        info(ans);
+    }
+}
+
 // view
 let _update: () => void;
 
@@ -39,8 +64,9 @@ export function update() {
     _update();
 }
 
-export function init(func: () => void): Promise<any> {
-    _update = func;
+export function init(f: () => void, h: IHandler = _initialHandler): Promise<any> {
+    _update = f;
+    _initialHandler = h;
     return reset();
 }
 
@@ -86,11 +112,13 @@ export const user = {
 let _table: ContactTable;
 let _contact: Contact;
 let _modal_msg: string;
+let _search_text: string;
 
 export const state = {
-    get table(): ContactTable { return _table; },
-    get contact(): Contact { return _contact; },
-    get modalMsg(): string { return _modal_msg; },
+    get table() { return _table; },
+    get contact() { return _contact; },
+    get modalMsg() { return _modal_msg; },
+    get searchText() { return _search_text; },
 };
 
 export function setTableByName(name: string) {
@@ -125,10 +153,12 @@ export function setEditingText(text: string) {
     _update();
 }
 
-export async function showModal(msg: string) {
-    if (!msg) {
+export async function showModal(msg: any) {
+    if (msg === '' || msg === undefined || msg === null) {
         return;
     }
+
+    msg = String(msg);
 
     while (_modal_msg) {
         await sleep(100);
@@ -146,15 +176,21 @@ export function closeModal() {
     }
 }
 
-export function popModal(msg: string, t = 2500) {
+export function popModal(msg: any, t = 2500) {
     showModal(msg);
     setTimeout(closeModal, t);
+}
+
+export function setSearchText(event: any) {
+    _search_text = event.target.value || '';
+    _update();
 }
 
 // logging
 let _level: LogLevel;
 
-export function log(level: LogLevel, msg: string) {
+export function log(level: LogLevel, msg: any) {
+    msg = String(msg);
     if (level < _level) {
         return;
     }
@@ -178,11 +214,14 @@ export function abort(msg: string) {
 }
 
 // handler
-let _onMessage: (c: Contact, m: IMessage) => any;
+let _initialHandler: IHandler = {
+    onMessage: nullFunc,
+    onCqEvent: nullFunc,
+};
 
-export const handler = {
-    get onMessage() { return _onMessage; },
-    set onMessage(h: (c: Contact, m: IMessage) => any) { _onMessage = h; },
+export const handler: IHandler = {
+    onMessage: nullFunc,
+    onCqEvent: nullFunc,
 };
 
 // 启动
@@ -191,7 +230,7 @@ export async function reset(ws_host = '', token = '', recents_str = '') {
 
     tables.forEach(t => t.clear());
     cqConsole.clear();
-    recents.add(cqConsole);
+    recents.unshift(cqConsole);
 
     _userqq = '';
     _username = 'I';
@@ -199,11 +238,12 @@ export async function reset(ws_host = '', token = '', recents_str = '') {
     _table = recents;
     _contact = cqConsole;
     _modal_msg = '';
+    _search_text = '';
 
     _level = INFO;
     _aborted = false;
 
-    _onMessage = nullFunc;
+    Object.assign(handler, _initialHandler);
 
     await sleep(10);
 
@@ -216,14 +256,14 @@ export async function reset(ws_host = '', token = '', recents_str = '') {
 
         data = await api('get_friend_list');
         for (const e of data) {
-            new Contact(BUDDY, String(e.user_id), e.remark || e.nickname);
+            buddies.getOrInsert(String(e.user_id), e.remark || e.nickname);
         }
         _table = buddies;
         update();
 
         data = await api('get_group_list');
         for (const e of data) {
-            new Contact(GROUP, String(e.group_id), e.group_name);
+            groups.getOrInsert(String(e.group_id), e.group_name);
         }
         _table = groups;
         info(`登录用户：${user.name}（${user.qq}），${buddies.size}个好友，${groups.size}个群`);
