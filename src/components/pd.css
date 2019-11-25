@@ -1,0 +1,36 @@
+.pd-modal {
+    position: fixed;
+    top: 0px;
+    z-index: 10000;
+    width: calc(100% - 600px);
+    margin: 40px 300px 0;
+    text-align: center;
+}
+
+.pd-modal-box {
+    display: inline-block;
+    width: 240px;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    background: RGB(200, 200, 200);
+}
+
+.pd-modal-box .pd-button {
+    float: right;
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+    margin: 8px;
+    font-size: 16px;
+    color: rgb(130, 160, 191);
+    background: RGB(200, 200, 200);
+}
+
+.pd-modal-box .pd-button:hover {
+    color: rgb(150, 180, 211);
+}
+
+.pd-modal-content {
+    padding: 10px;
+}

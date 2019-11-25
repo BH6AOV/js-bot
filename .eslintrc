@@ -1,0 +1,50 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "max-len": [
+            "error",
+            {
+                "code": 120
+            }
+        ],
+        "indent": [
+            "warn",
+            4
+        ],
+        "linebreak-style": "off",
+        "quotes": [
+            "warn",
+            "single"
+        ],
+        "semi": [
+            "warn",
+            "always"
+        ],
+        "no-console": "off",
+        "no-constant-condition": "off",
+        "no-global-assign": "error",
+        "no-redeclare": "error",
+        "no-const-assign": "error",
+        "no-unused-vars": "warn",
+        "eqeqeq": [
+            "error",
+            "always"
+        ],
+        "global-require": "error"
+    },
+    "globals": {
+        "log": false,
+        "verbose": false
+    }
+}

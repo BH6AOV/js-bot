@@ -1,0 +1,19 @@
+{
+    "editor.minimap.enabled": false,
+    "search.location": "panel",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "extensions.ignoreRecommendations": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "python.pythonPath": "C:\\Python27\\python.exe",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "eslint.options": {
+        "configFile": ".eslintrc"
+    },
+    "eslint.packageManager": "yarn",
+    "editor.detectIndentation": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "breadcrumbs.enabled": false
+}

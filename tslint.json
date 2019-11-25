@@ -1,0 +1,56 @@
+{
+    "extends": [
+        "tslint:recommended",
+        "tslint-react"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "src/serviceWorker.ts"
+        ]
+    },
+    "rules": {
+        "no-console": false,
+        "quotemark": [
+            true,
+            "single",
+            "avoid-template"
+        ],
+        "max-line-length": [
+            true,
+            110
+        ],
+        "triple-equals": true,
+        "curly": true,
+        "align": [
+            true,
+            "parameters",
+            "statements"
+        ],
+        "prefer-for-of": true,
+        "prefer-const": true,
+        "eofline": false,
+        "object-literal-sort-keys": false,
+        "arrow-parens": false,
+        "await-promise": true,
+        "jsx-no-multiline-js": false,
+        "ordered-imports": false,
+        "interface-name": false,
+        "member-access": false,
+        "no-empty": false,
+        "no-var-keyword": false,
+        "variable-name": false,
+        "max-classes-per-file": false,
+        "object-literal-key-quotes": false,
+        "member-ordering": false,
+        "no-conditional-assignment": false,
+        "no-restricted-globals": [
+            true,
+            "name",
+            "length",
+            "event",
+            "location",
+            "confirm"
+        ],
+        "no-unused-expression": false
+    }
+}

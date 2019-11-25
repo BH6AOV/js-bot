@@ -1,0 +1,149 @@
+.cq-table-list {
+    position: absolute;
+    width: 300px;
+    height: 35px;
+    color: rgb(130, 160, 191);
+    background: RGB(232, 236, 239);
+}
+
+.cq-contact-list {
+    position: absolute;
+    top: 35px;
+    width: 300px;
+    height: calc(100% - 72px);
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    overflow-y: scroll;
+    color: rgb(130, 160, 191);
+    background: RGB(232, 236, 239);
+}
+
+.cq-contact-list .pd-button {
+    width: calc(100% - 15px);
+    height: 30px;
+    padding-left: 15px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.cq-contact-search {
+    position: absolute;
+    bottom: 0px;
+    width: 300px;
+    height: 35px;
+    color: rgb(130, 160, 191);
+    background: RGB(232, 236, 239);
+}
+
+.cq-contact-title {
+    margin-left: 300px;
+    width: calc(100% - 300px);
+    height: 30px;
+    padding-top: 5px;
+    font-size: 16px;
+    text-align: center;
+    color: rgb(130, 160, 191);
+    background: RGB(245, 245, 245);
+}
+
+.cq-contact-title a {
+    position: absolute;
+    right: 15px;
+    font-size: 15px;
+    text-decoration: none;
+    color: rgb(130, 160, 191);
+}
+
+.cq-contact-title a:hover {
+    color: #2e506b;
+    text-decoration: underline;
+}
+
+.cq-document {
+    position: absolute;
+    margin-bottom: -35px;
+    left: 20px;
+}
+
+.cq-message-item {
+    width: calc(100% - 30px);
+    margin: 10px 15px 20px 15px;
+}
+
+.cq-message-item span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    word-break: break-all;
+    color: RGB(178, 178, 178);
+}
+
+.cq-message-item>div {
+    display: inline-block;
+    padding: 10px;
+    max-width: calc(50% - 40px);
+    border-radius: 4px;
+    font-size: 15px;
+    word-break: break-all;
+    text-align: left;
+    color: BLACK;
+    background: white;
+}
+
+.cq-message-item-right {
+    text-align: right;
+}
+
+.cq-message-item-right>div {
+    background: RGB(152,225,101);
+}
+
+.cq-message-list {
+    margin-left: 300px;
+    width: calc(100% - 300px);
+    height: calc(100% - 335px);
+    overflow-y: scroll;
+    color: rgb(130, 160, 191);
+    background: RGB(245, 245, 245);
+}
+
+.cq-message-input {
+    margin-left: 300px;
+    width: calc(100% - 320px);
+    height: 280px;
+    padding: 10px;
+    background: white;
+}
+
+.cq-message-input textarea {
+    width: calc(100% - 5px);
+    height: 276px;
+    font-size: 15px;
+    border-color: white;
+    outline-color: white;
+}
+
+.cq-message-input .pd-button {
+    position: absolute;
+    display: block;
+    width: 70px;
+    height: 25px;
+    color: black;
+    background: RGB(235, 235, 235);
+    font-size: 14px;
+    text-align: center;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 4px;
+}
+
+.cq-message-input .pd-button:hover {
+    color: white;
+    background: RGB(18, 150, 17);
+}
+
+.cq-message-input .pd-button-disabled, .cq-message-input .pd-button-disabled:hover {
+    color: RGB(65, 65, 65);
+    background: RGB(225, 225, 225);
+    cursor: not-allowed;
+}

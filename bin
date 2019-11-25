@@ -1,0 +1,11 @@
+build:
+    Remove-Item .\build -Recur -ErrorAction Ignore
+    Set-Item Env:GENERATE_SOURCEMAP false
+    npx react-scripts build
+    Clear-Item Env:GENERATE_SOURCEMAP
+
+deploy:
+    scp -r .\build bht:D:\project\bht\frontend-deploy
+    ssh bht cmd /c "robocopy /mir D:\project\bht\frontend-deploy\build D:\project\bht\frontend-deploy\html & rmdir /S /Q D:\project\bht\frontend-deploy\build" 2>&1 1>1.txt; python -c "import sys; sys.exit(0)"
+    Get-Content 1.txt | select -last 14; del 1.txt
+    Remove-Item .\build -Recur -ErrorAction Ignore
