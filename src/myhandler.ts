@@ -9,7 +9,7 @@ export default {
             return;
         }
 
-        const joke = await cq.ai.produceJoke();
+        const joke = await cq.ai.joke();
         await contact.send(joke);
         cq.popModal('发送笑话成功.');
     },
@@ -27,7 +27,7 @@ handler.onMessage = function (contact, message) {
         return;
     }
 
-    return ai.produceJoke()
+    return ai.joke()
         .then(function (joke) {
             return contact.send('笑话: ' + joke);
         })

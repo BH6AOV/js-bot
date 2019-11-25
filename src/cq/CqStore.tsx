@@ -17,16 +17,16 @@ export const INFO = 1;
 export const WARN = 2;
 export const ERROR = 3;
 export const LEVEL_NAMES = [ 'debug', 'info', 'warn', 'error' ];
-export const GITHUB_URL = 'https://github.com/pandolia/coolq-react';
+export const GITHUB_URL = 'https://github.com/pandolia/js-bot';
 export const MAX_MESSAGES_SIZE = 500;
-export const PROJECT_NAME = 'Coolq React';
+export const PROJECT_NAME = 'js-bot';
 export const DEFAULT_WS_HOST = 'ws://127.0.0.1:6700';
 export const DEFAULT_TOKEN = 'mytoken';
 export const DEFAULT_RENCENTS_STR = 'buddy3497303033,group163276112';
-export const WELCOME_INFO = '请在此输入 Js 代码运行，在普通联系人窗口直接聊天'
+export const WELCOME_INFO = '请在此输入 Javascript 代码运行，在普通联系人窗口直接聊天'
     + `\n输入 cq.reset() 或刷新页面重启 ${PROJECT_NAME}`
     + `\n输入 cq.reset('${DEFAULT_WS_HOST}', '${DEFAULT_TOKEN}') 重设服务地址`
-    + '\n输入 cq.help() 查询帮助';
+    + '\n点击右上角的 Doc 查询帮助';
 
 // libs
 export const sleep = libs.sleep;
@@ -40,7 +40,9 @@ export const ai = _ai;
 export const api = _api;
 
 // eval
-let ans;
+export let ans = null;
+
+export const w: any = {};
 
 export async function _eval(s: string) {
     let _ans = undefined;
@@ -52,9 +54,10 @@ export async function _eval(s: string) {
     }
 
     ans = _ans;
-    if (ans !== undefined) {
-        info(ans);
+    if (_ans === undefined && (!cqConsole.messages.length || libs.last(cqConsole.messages).isIn)) {
+        return;
     }
+    cqConsole.addMessage(CQ_CONSOLE_NAME + '.ans', String(_ans), true);
 }
 
 // view
@@ -145,20 +148,8 @@ export function setContactByQQ(qq: string) {
     _update();
 }
 
-export function setEditingText(text: string) {
-    if (text === _contact.editingText) {
-        return;
-    }
-    _contact.editingText = text;
-    _update();
-}
-
 export async function showModal(msg: any) {
-    if (msg === '' || msg === undefined || msg === null) {
-        return;
-    }
-
-    msg = String(msg);
+    msg = String(msg) || 'null';
 
     while (_modal_msg) {
         await sleep(100);
@@ -201,6 +192,11 @@ export const debug = log.bind(null, DEBUG);
 export const info = log.bind(null, INFO);
 export const warn = log.bind(null, WARN);
 export const error = log.bind(null, ERROR);
+
+export function clr() {
+    cqConsole.clear();
+    update();
+}
 
 export function setLogLevel(level: LogLevel) {
     _level = level;
@@ -247,7 +243,7 @@ export async function reset(ws_host = '', token = '', recents_str = '') {
 
     await sleep(10);
 
-    info(`正在启动 Cool React ，WebSocket地址：${_ws_host}`);
+    info(`欢迎使用 js-bot ，酷Q WebSocket 地址：${_ws_host}`);
 
     try {
         let data = await api('get_login_info');
@@ -268,7 +264,7 @@ export async function reset(ws_host = '', token = '', recents_str = '') {
         _table = groups;
         info(`登录用户：${user.name}（${user.qq}），${buddies.size}个好友，${groups.size}个群`);
 
-        await connectWs();
+        connectWs();
 
         for (let c of _recents_str.split(',')) {
             c = c.trim();

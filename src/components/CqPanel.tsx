@@ -1,5 +1,5 @@
 import React, { Component, Fragment, PureComponent } from 'react';
-import { cuid, ENTER_KEY } from '../common';
+import { cuid, ENTER_KEY, UP_KEY, DOWN_KEY } from '../common';
 import Contact from '../cq/Contact';
 import ContactTable from '../cq/ContactTable';
 import cq from '../cq';
@@ -44,10 +44,12 @@ export default class CqPanel extends Component<{initialHandler: IHandler}> {
                     messages={cq.state.contact.messages}
                     updatetime={cq.state.contact.lastModifiedTime}
                 />
+                <div className='cq-interact-type'>{cq.state.contact.interactType}</div>
                 <MessageInput
                     value={cq.state.contact.editingText}
                     disabled={cq.state.contact.sending}
-                    onChange={cq.setEditingText}
+                    onChange={cq.state.contact.changeText}
+                    onRoll={cq.state.contact.rollText}
                     onSubmit={cq.state.contact._send}
                 />
                 <Modal
@@ -136,6 +138,7 @@ interface IProps5 {
     readonly disabled?: boolean | undefined;
     readonly onChange: Func<string>;
     readonly onSubmit: Action;
+    readonly onRoll: Func<boolean>;
 }
 
 class MessageInput extends PureComponent<IProps5> {
@@ -157,6 +160,15 @@ class MessageInput extends PureComponent<IProps5> {
 
     // submit on Ctrl/Shift + Enter
     onKeyDown = (event: React.KeyboardEvent) => {
+        if (event.keyCode === UP_KEY || event.keyCode === DOWN_KEY) {
+            if (this.props.value.includes('\n')) {
+                return;
+            }
+            event.preventDefault();
+            this.props.onRoll(event.keyCode === UP_KEY);
+            return;
+        }
+
         if (event.keyCode !== ENTER_KEY) {
             return;
         }

@@ -78,6 +78,15 @@
     left: 20px;
 }
 
+.cq-message-list {
+    margin-left: 300px;
+    width: calc(100% - 300px);
+    height: calc(100% - 335px);
+    overflow-y: scroll;
+    color: rgb(130, 160, 191);
+    background: RGB(245, 245, 245);
+}
+
 .cq-message-item {
     width: calc(100% - 30px);
     margin: 10px 15px 20px 15px;
@@ -111,14 +120,14 @@
     background: RGB(152,225,101);
 }
 
-.cq-message-list {
-    margin-left: 300px;
-    width: calc(100% - 300px);
-    height: calc(100% - 335px);
-    overflow-y: scroll;
-    color: rgb(130, 160, 191);
-    background: RGB(245, 245, 245);
+.cq-interact-type {
+    position: fixed;
+    left: 305px;
+    bottom: 305px;
+    font-size: 15px;
+    color: gray;
 }
+
 
 .cq-message-input {
     margin-left: 300px;

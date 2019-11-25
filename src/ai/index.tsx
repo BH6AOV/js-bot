@@ -1,4 +1,4 @@
-export function produceJoke(): Promise<string> {
+export function joke(): Promise<string> {
     return fetch('https://autumnfish.cn/api/joke')
         .then(resp => {
             if (!resp.ok) {

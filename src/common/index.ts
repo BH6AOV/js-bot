@@ -7,6 +7,8 @@ export function sleep(t: number) {
 export function nullFunc() { }
 
 export const ENTER_KEY = 13;
+export const UP_KEY = 38;
+export const DOWN_KEY = 40;
 
 let _i = 0;
 
@@ -23,4 +25,12 @@ export function remove<T>(array: T[], el: T): number {
     }
 
     return -1;
+}
+
+export function last<T>(array: T[]): T {
+    const n = array.length;
+    if (n === 0) {
+        throw new Error('try to get the  last element of an empty array');
+    }
+    return array[n - 1];
 }
