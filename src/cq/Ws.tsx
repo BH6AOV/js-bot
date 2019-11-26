@@ -1,5 +1,24 @@
 import * as cq from './CqStore';
-import api from './Api';
+
+export function api(action: string, params: any = null): Promise<any> {
+    return new Promise((resolve, reject) => {
+        let hasResp = false;
+        const _ws = new WebSocket(cq.apiUrl);
+        const body = JSON.stringify({ action, params });
+        _ws.addEventListener('open', () => _ws.send(body));
+        _ws.addEventListener('close', () => hasResp || reject(new Error('WebSocket Api 服务非正常关闭')));
+        _ws.addEventListener('error', () => reject(new Error('WebSocket Api 服务连接错误')));
+        _ws.addEventListener('message', (event) => {
+            const { status, data } = JSON.parse(event.data);
+            hasResp = true;
+            _ws.close();
+            if (status !== 'ok') {
+                reject(new Error('WebSocket ' + status));
+            }
+            resolve(data);
+        });
+    });
+}
 
 let ws: WebSocket | null = null;
 
@@ -7,15 +26,8 @@ const abort1 = () => cq.abort('WebSocket Event 服务非正常关闭');
 
 const abort2 = () => cq.abort('WebSocket Event 服务连接错误');
 
-export default function connectWs() {
-    if (ws) {
-        ws.removeEventListener('close', abort1);
-        ws.removeEventListener('error', abort2);
-        ws.removeEventListener('message', onWsData);
-        ws.close();
-    }
-
-    ws = new WebSocket(cq.config.wsUrl);
+export function connectEventWs() {
+    ws = new WebSocket(cq.wsUrl);
     ws.addEventListener('close', abort1);
     ws.addEventListener('error', abort2);
     ws.addEventListener('message', onWsData);
@@ -47,7 +59,7 @@ async function onMessageData(data: any): Promise<boolean> {
 
     if (message_type === 'private') {
         var from = sender.remark || sender.nickname;
-        var contact = cq.buddies.getOrInsert(String(user_id), from);
+        var contact = cq.buddies._getOrInsert(String(user_id), from);
     } else if (message_type === 'group') {
         from = sender.card || sender.nickname || sender.user_id;
         const groupQQ = String(group_id);
@@ -62,14 +74,13 @@ async function onMessageData(data: any): Promise<boolean> {
                 cq.popModal(err.message);
                 group_name = groupQQ;
             }
-            contact = cq.groups.getOrInsert(groupQQ, group_name);
+            contact = cq.groups._getOrInsert(groupQQ, group_name);
         }
     } else {
         return false;
     }
 
-    const message = contact.addMessage(from, raw_message, true);
-
+    const message = contact.addMsg(cq.LEFT, from, raw_message);
     try {
         await cq.handler.onMessage(contact, message);
     } catch (err) {

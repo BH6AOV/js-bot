@@ -1,3 +1,11 @@
+#cq-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+}
+
 .cq-table-list {
     position: absolute;
     width: 300px;
@@ -48,51 +56,89 @@
     background: RGB(232, 236, 239);
 }
 
-.cq-contact-title {
-    margin-left: 300px;
-    width: calc(100% - 300px);
+.cq-label-contact-title {
+    position: absolute;
+    top: 0px;
+    left: 300px;
+    width: calc(100% - 360px);
     height: 30px;
     padding-top: 5px;
-    font-size: 16px;
+    font-size: 15px;
     text-align: center;
     color: rgb(130, 160, 191);
     background: RGB(245, 245, 245);
 }
 
-.cq-contact-title a {
+.cq-label-doc {
     position: absolute;
+    top: 0px;
     right: 15px;
+    width: 30px;
+    padding-right: 15px;
+    height: 30px;
+    padding-top: 5px;
     font-size: 15px;
+    text-align: center;
     text-decoration: none;
-    color: rgb(130, 160, 191);
+    color: RGB(178, 178, 178);
+    background: RGB(245, 245, 245);
 }
 
-.cq-contact-title a:hover {
-    color: #2e506b;
+.cq-label-doc:hover {
+    color: rgb(130, 160, 191);
     text-decoration: underline;
 }
 
-.cq-document {
+.cq-label-playmode {
     position: absolute;
-    margin-bottom: -35px;
-    left: 20px;
+    bottom: 235px;
+    left: 300px;
+    padding-left: 10px;
+    width: 290px;
+    padding-top: 5px;
+    height: 20px;
+    padding-bottom: 5px;
+    font-size: 13px;
+    text-align: left;
+    color: RGB(178, 178, 178);
+    background: RGB(245, 245, 245);
+}
+
+.cq-label-playmode[name^="注意"] {
+    color: rgb(130, 160, 191);    
+}
+
+.cq-label-sendername {
+    position: absolute;
+    bottom: 235px;
+    right: 15px;
+    width: calc(100% - 615px);
+    padding-right: 15px;
+    padding-top: 5px;
+    height: 20px;
+    padding-bottom: 5px;
+    font-size: 13px;
+    text-align: right;
+    text-decoration: none;
+    color: RGB(178, 178, 178);
+    background: RGB(245, 245, 245);
 }
 
 .cq-message-list {
     margin-left: 300px;
     width: calc(100% - 300px);
-    height: calc(100% - 335px);
+    height: calc(100% - 235px);
     overflow-y: scroll;
     color: rgb(130, 160, 191);
     background: RGB(245, 245, 245);
 }
 
-.cq-message-item {
+.cq-message-list .cq-message-item {
     width: calc(100% - 30px);
     margin: 10px 15px 20px 15px;
 }
 
-.cq-message-item span {
+.cq-message-list .cq-message-item span {
     display: block;
     margin-bottom: 5px;
     font-size: 13px;
@@ -100,7 +146,7 @@
     color: RGB(178, 178, 178);
 }
 
-.cq-message-item>div {
+.cq-message-list .cq-message-item>div {
     display: inline-block;
     padding: 10px;
     max-width: calc(50% - 40px);
@@ -112,37 +158,53 @@
     background: white;
 }
 
-.cq-message-item-right {
+.cq-message-list .cq-message-item-right {
     text-align: right;
 }
 
-.cq-message-item-right>div {
+.cq-message-list .cq-message-item-right>div {
     background: RGB(152,225,101);
 }
 
-.cq-interact-type {
-    position: fixed;
-    left: 305px;
-    bottom: 305px;
+.cq-logging-list {
+    margin-left: 300px;
+    padding-left: 10px;
+    width: calc(100% - 310px);
+    height: calc(100% - 235px);
+    overflow-y: scroll;
+    overflow-x: hidden;
     font-size: 15px;
-    color: gray;
+    font-family: 'Courier New', Courier, monospace;
+    color: rgb(130, 160, 191);
+    background: RGB(245, 245, 245);
 }
 
+.cq-mlist-first {
+    width: 200px;
+    height: 35px;
+}
+
+.cq-mlist-last {
+    width: 200px;
+    height: 30px;
+}
 
 .cq-message-input {
     margin-left: 300px;
     width: calc(100% - 320px);
-    height: 280px;
+    height: 215px;
     padding: 10px;
     background: white;
 }
 
 .cq-message-input textarea {
     width: calc(100% - 5px);
-    height: 276px;
+    height: 210px;
     font-size: 15px;
+    font-family: 'Courier New', Courier, monospace;
     border-color: white;
     outline-color: white;
+    border: white;
 }
 
 .cq-message-input .pd-button {

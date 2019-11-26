@@ -52,6 +52,7 @@
             "confirm"
         ],
         "no-unused-expression": false,
-        "no-unnecessary-initializer": false
+        "no-unnecessary-initializer": false,
+        "prefer-const": false
     }
 }

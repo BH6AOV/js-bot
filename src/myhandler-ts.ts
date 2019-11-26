@@ -18,21 +18,3 @@ export default {
         return;
     },
 };
-
-/*
-也可以粘贴以下代码到 CqConsole 控制台运行：
-
-handler.onMessage = function (contact, message) {
-    if (message.content !== '-joke') {
-        return;
-    }
-
-    return ai.joke()
-        .then(function (joke) {
-            return contact.send('笑话: ' + joke);
-        })
-        .then(function () {
-            popModal('发送笑话成功.');
-        });
-}
-*/

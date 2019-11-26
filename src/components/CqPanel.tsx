@@ -1,4 +1,4 @@
-import React, { Component, Fragment, PureComponent } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { cuid, ENTER_KEY, UP_KEY, DOWN_KEY } from '../common';
 import Contact from '../cq/Contact';
 import ContactTable from '../cq/ContactTable';
@@ -8,55 +8,56 @@ import './CqPanel.css';
 
 export default class CqPanel extends Component<{initialHandler: IHandler}> {
     componentWillMount() {
-        cq.init(this.forceUpdate.bind(this), this.props.initialHandler);
+        cq._init(this.forceUpdate.bind(this), this.props.initialHandler);
     }
 
     render() {
         return (
-            <Fragment>
+            <div id='cq-panel'>
                 <ButtonGroup
                     className='cq-table-list'
                     names={cq.TABLE_NAMES}
-                    current={cq.state.table.name}
+                    current={cq.table.name}
                     onChange={cq.setTableByName}
                 />
                 <ContactList
-                    table={cq.state.table}
-                    updatetime={cq.state.table.lastModifiedTime}
-                    searchText={cq.state.searchText}
-                    contact={cq.state.contact}
+                    table={cq.table}
+                    updatetime={cq.table.lastModifiedTime}
+                    searchText={cq.searchText}
+                    contact={cq.contact}
                     onChange={cq.setContactByQQ}
                 />
                 <div className='cq-contact-search'>
                     <input
                         placeholder='搜 索'
-                        value={cq.state.searchText}
+                        value={cq.searchText}
                         onChange={cq.setSearchText}
+                        onKeyDown={cq.chooseContactBySearch}
                     />
                 </div>
-                <div className='cq-contact-title'>
-                    {cq.state.contact.toString()}
-                    <a href={cq.GITHUB_URL} {...targetLinkAttr}>
-                        Doc
-                    </a>
-                </div>
+                <span className='cq-label-contact-title'>{cq.contact.title}</span>
+                <a className='cq-label-doc' href={cq.GITHUB_URL} {...targetLinkAttr}>文档</a>
+                <span className='cq-label-playmode' {...{name: cq.contact.playMode}}>
+                    {cq.contact.playMode}
+                </span>
+                <span className='cq-label-sendername'>{cq.contact.senderName}</span>
                 <MessageList
-                    messages={cq.state.contact.messages}
-                    updatetime={cq.state.contact.lastModifiedTime}
+                    messages={cq.contact._messages}
+                    updatetime={cq.contact.lastModifiedTime}
                 />
-                <div className='cq-interact-type'>{cq.state.contact.interactType}</div>
                 <MessageInput
-                    value={cq.state.contact.editingText}
-                    disabled={cq.state.contact.sending}
-                    onChange={cq.state.contact.changeText}
-                    onRoll={cq.state.contact.rollText}
-                    onSubmit={cq.state.contact._send}
+                    value={cq.contact.editingText}
+                    updateTime={cq.contact.lastModifiedTime}
+                    disabled={cq.contact.sending}
+                    onChange={cq.contact.changeText}
+                    onRoll={cq.contact._rollText}
+                    onSubmit={cq.contact.send}
                 />
                 <Modal
-                    content={cq.state.modalMsg}
+                    content={cq.modalMsg}
                     onOk={cq.closeModal}
                 />
-            </Fragment>
+            </div>
         );
     }
 }
@@ -72,11 +73,13 @@ interface IProps2 {
 class ContactList extends PureComponent<IProps2> {
     render() {
         const { table, searchText, contact, onChange } = this.props;
-        const contacts = searchText ? table.filter(c => c.name.includes(searchText)) : table;
+        const contacts = searchText
+            ? table.filter(c => c.type > cq.NOTYPE || c.name.includes(searchText))
+            : table;
         return (
             <ButtonGroup
                 className='cq-contact-list'
-                names={contacts.map(c => c.name)}
+                names={contacts.map(c => c.label)}
                 keys={contacts.map(c => c.qq)}
                 current={contact.qq}
                 onChange={onChange}
@@ -104,13 +107,16 @@ class MessageList extends PureComponent<IProps3> {
         el.scrollTop = el.scrollHeight;
     }
 
-    id = 'cq-message-list';
+    id = cq.cuid();
 
     render() {
         const { messages } = this.props;
+        const className = (cq.contact === cq.cqConsole) ? 'cq-logging-list' : 'cq-message-list';
         return (
-            <div id={this.id} className={this.id}>
+            <div id={this.id} className={className}>
+                <div className='cq-mlist-first'/>
                 {messages.map(m => <MessageItem key={m.id} message={m}/>)}
+                <div className='cq-mlist-last'/>
             </div>
         );
     }
@@ -122,19 +128,15 @@ interface IProps4 {
 
 class MessageItem extends PureComponent<IProps4> {
     render() {
-        const { from, content, isIn } = this.props.message;
-        const className = isIn ? 'cq-message-item' : 'cq-message-item cq-message-item-right';
-        return  (
-            <div className={className}>
-                <span>{from}</span>
-                <TextDiv text={content}/>
-            </div>
-        );
+        const { from, content, direction } = this.props.message;
+        const className = `cq-message-item${direction ? ' cq-message-item-right' : ''}`;
+        return <div className={className}><span>{from}</span><TextDiv text={content}/></div>;
     }
 }
 
 interface IProps5 {
     readonly value: string;
+    readonly updateTime: string;
     readonly disabled?: boolean | undefined;
     readonly onChange: Func<string>;
     readonly onSubmit: Action;

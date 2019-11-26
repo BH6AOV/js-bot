@@ -34,3 +34,24 @@ export function last<T>(array: T[]): T {
     }
     return array[n - 1];
 }
+
+export function f5() {
+    // eslint-disable-next-line
+    setTimeout(() => { window.location.href = window.location.href; }, 500);
+}
+
+function getQueryParams(qs: string): Readonly<Map<string, string>> {
+    const params: Map<string, string> = new Map();
+    let tokens: any;
+    const re = /([^=]+)=([^&]*)/g;
+
+    qs = qs.substring(1);
+    // eslint-disable-next-line
+    while (tokens = re.exec(qs)) {
+        params.set(decodeURIComponent(tokens[1]), decodeURIComponent(tokens[2]));
+    }
+
+    return params;
+}
+
+export const urlParams = getQueryParams(window.location.search);

@@ -8,15 +8,23 @@ export default class ContactTable {
     readonly map = this._list.map.bind(this._list);
     readonly forEach = this._list.forEach.bind(this._list);
     readonly filter = this._list.filter.bind(this._list);
+    readonly find = this._list.find.bind(this._list);
     lastModifiedTime: string = cq.cuid();
-    get size() { return this._list.length; }
+    get length() { return this._list.length; }
     get name() { return cq.TABLE_NAMES[this.type]; }
 
     constructor(type: ContactType) {
         this.type = type;
     }
 
-    getOrInsert(qq: string, name: string): Contact {
+    get(qqOrIndex: string | number): Contact | undefined {
+        if (typeof(qqOrIndex) === 'string') {
+            return this._dict.get(qqOrIndex);
+        }
+        return this._list[qqOrIndex];
+    }
+
+    _getOrInsert(qq: string, name: string): Contact {
         let c = this._dict.get(qq);
         if (c) {
             if (c.name !== name) {
@@ -34,9 +42,19 @@ export default class ContactTable {
         return c;
     }
 
+    _add(c: Contact) {
+        this._list.push(c);
+        this._dict.set(c.qq, c);
+        this.lastModifiedTime = cq.cuid();
+    }
+
     unshift(c: Contact) {
+        if (c.type > cq.NOTYPE) {
+            return;
+        }
+
         const i = this._list.indexOf(c);
-        if (i === 0) {
+        if (i === 2) {
             return;
         }
 
@@ -45,7 +63,7 @@ export default class ContactTable {
         } else {
             this._dict.set(c.qq, c);
         }
-        this._list.unshift(c);
+        this._list.splice(2, 0, c);
         this.lastModifiedTime = cq.cuid();
     }
 
@@ -57,12 +75,5 @@ export default class ContactTable {
         this._list.splice(0, n);
         this._dict.clear();
         this.lastModifiedTime = cq.cuid();
-    }
-
-    get(qqOrIndex: string | number): Contact | undefined {
-        if (typeof(qqOrIndex) === 'string') {
-            return this._dict.get(qqOrIndex);
-        }
-        return this._list[qqOrIndex];
     }
 }
