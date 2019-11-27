@@ -70,7 +70,7 @@ null
 null
 ```
 
-控制台模式下，使用 js-bot 提供的内部变量和方法：
+控制台模式下，可使用 js-bot 提供的内部变量和方法：
 
 * buddies： 好友列表，ContactTable 对象，具有 type/name/length 属性及 get/map/forEach/filter/find 方法
 * groups: 群列表，ContactTable 对象
