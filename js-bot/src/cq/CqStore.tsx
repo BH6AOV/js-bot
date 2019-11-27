@@ -196,7 +196,8 @@ export function print(line = '') {
 }
 
 export function clr() {
-    cqConsole.clear(5);
+    setTimeout(() => { cqConsole.clear(5); update(); }, 10);
+    return '';
 }
 
 export let level: LogLevel = INFO;
