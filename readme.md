@@ -105,6 +105,7 @@ handler.onMessage = function (contact, message) {
 
 在控制台中运行以上代码后，当 **本账号** 收到内容为 **"-hello"** 的消息时，会自动回复： **"你好，xx"** 。
 
+onMessage 函数中：第一个参数 contact 是一个 Contact 对象 代表此消息的发送方，可以调用其 send 方法向其回复消息；第二个参数 message 是一个 IMessage 对象，代表消息体，具有 id、direction、from 和 content 属性，其中 content 为消息内容。
 
 四、虚拟聊天模式
 ---------------
@@ -214,9 +215,16 @@ type DirectionType = 0 | 1;
 
 // 消息接口（ onMessage 的第二个参数为 IMessage 对象）
 interface IMessage {
+    // 消息 id
     readonly id: string;
+
+    // 消息方向
     readonly direction: DirectionType;
+
+    // 消息发送方名称
     readonly from: string;
+
+    // 消息内容
     readonly content: string;
 }
 
