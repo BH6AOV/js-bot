@@ -6,9 +6,9 @@ import cq from '../cq';
 import { ButtonGroup, Modal, TextDiv, Button, targetLinkAttr } from './pd';
 import './CqPanel.css';
 
-export default class CqPanel extends Component<{initialHandler: IHandler}> {
+export default class CqPanel extends Component<{handler: IHandler}> {
     componentWillMount() {
-        cq._init(this.forceUpdate.bind(this), this.props.initialHandler);
+        cq._init(this.forceUpdate.bind(this), this.props.handler);
     }
 
     render() {
@@ -111,7 +111,7 @@ class MessageList extends PureComponent<IProps3> {
 
     render() {
         const { messages } = this.props;
-        const className = (cq.contact === cq.cqConsole) ? 'cq-logging-list' : 'cq-message-list';
+        const className = (cq.contact.type === cq.CONSOLE) ? 'cq-logging-list' : 'cq-message-list';
         return (
             <div id={this.id} className={className}>
                 <div className='cq-mlist-first'/>

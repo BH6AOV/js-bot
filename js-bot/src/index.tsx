@@ -5,5 +5,5 @@ import * as serviceWorker from './serviceWorker';
 import CqPanel from './components/CqPanel';
 import handler from './myhandler-ts';
 
-ReactDOM.render(<CqPanel initialHandler={handler}/>, document.getElementById('root'));
+ReactDOM.render(<CqPanel handler={handler}/>, document.getElementById('root'));
 serviceWorker.unregister();

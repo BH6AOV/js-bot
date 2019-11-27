@@ -77,7 +77,7 @@ export default class Contact {
         }
 
         const step = isUp ? -1 : 1;
-        const direction = (this !== cq.mySelf) ? cq.RIGHT : cq.LEFT;
+        const direction = (this.type !== cq.MYSELF) ? cq.RIGHT : cq.LEFT;
         this._messages.push({ direction, id: '', from: '', content: this.temp });
         for (let i = this.idx + step; ; i += step) {
             if (i === -1) {
@@ -94,12 +94,12 @@ export default class Contact {
 
             let { direction: _d, content } = this._messages[i];
 
-            if ((this !== cq.mySelf && _d === cq.LEFT)
-                || (this === cq.mySelf && _d === cq.RIGHT)) {
+            if ((this.type !== cq.MYSELF && _d === cq.LEFT)
+                || (this.type === cq.MYSELF && _d === cq.RIGHT)) {
                 continue;
             }
 
-            if (this === cq.cqConsole) {
+            if (this.type === cq.CONSOLE) {
                 content = content.substr(4).trim();
             }
 
@@ -115,7 +115,7 @@ export default class Contact {
         }
     }
 
-    send = async (text = this.editingText): Promise<string | null> => {
+    send = async (text = this.editingText): Promise<null> => {
         if (!text) {
             cq.popModal('请勿发送空消息', 2000);
             return null;
@@ -173,7 +173,7 @@ export default class Contact {
             this.sending = false;
             const e = `发送${cq.TABLE_NAMES[this.type]}消息失败：${err.message}`;
             cq.popModal(e);
-            return e;
+            throw new Error(e);
         }
 
         this.sending = false;
@@ -203,8 +203,8 @@ export default class Contact {
         this._messages.push(message);
         this.lastModifiedTime = cq.cuid();
 
-        if ((this !== cq.mySelf && direction === cq.RIGHT)
-            || (this === cq.mySelf && direction === cq.LEFT)) {
+        if ((this.type !== cq.MYSELF && direction === cq.RIGHT)
+            || (this.type === cq.MYSELF && direction === cq.LEFT)) {
             this.temp = '';
             this.editingText = this.temp;
             this.idx = this._messages.length;

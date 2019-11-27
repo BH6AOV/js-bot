@@ -1,4 +1,4 @@
-// API 文档地址： https://github.com/pandolia/coolq-react
+// API 文档地址： https://github.com/pandolia/js-bot
 
 import Contact from './cq/Contact';
 import cq from './cq';
