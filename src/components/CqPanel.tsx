@@ -35,7 +35,7 @@ export default class CqPanel extends Component<{initialHandler: IHandler}> {
                         onKeyDown={cq.chooseContactBySearch}
                     />
                 </div>
-                <span className='cq-label-contact-title'>{cq.contact.title}</span>
+                <span className='cq-label-contact-title'>{cq.contact.toString()}</span>
                 <a className='cq-label-doc' href={cq.GITHUB_URL} {...targetLinkAttr}>文档</a>
                 <span className='cq-label-playmode' {...{name: cq.contact.playMode}}>
                     {cq.contact.playMode}

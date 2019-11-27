@@ -68,6 +68,12 @@ if (!String.prototype.repeat) {
     };
 }
 
+if (!String.prototype.includes) {
+    String.prototype.includes = function (s) {
+        return this.indexOf(s) !== -1;
+    }
+}
+
 if (!Object.values) {
     Object.values = function (obj) {
         const values = [];

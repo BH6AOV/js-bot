@@ -22,12 +22,12 @@ export const INFO = 1;
 export const WARN = 2;
 export const ERROR = 3;
 export const LEVEL_NAMES = [ 'DEBUG', 'INFO', 'WARN', 'ERROR' ];
-export const GITHUB_URL = `https://github.com/pandolia${process.env.PUBLIC_URL}`;
 export const MAX_MESSAGES_SIZE = 400;
 export const PROJECT_NAME = process.env.REACT_APP_PROJECT_NAME;
 export const DEFAULT_WS_HOST = process.env.REACT_APP_WS_HOST;
 export const DEFAULT_TOKEN = process.env.REACT_APP_TOKEN;
 export const DEFAULT_RECENTS = process.env.REACT_APP_RECENTS;
+export const GITHUB_URL = `https://github.com/pandolia/${PROJECT_NAME}`;
 
 // libs
 export const sleep = libs.sleep;
@@ -48,18 +48,19 @@ export async function _eval(s: string) {
     try {
         _ans = await (window as any).eval(`with(cq){${s}}`);
     } catch (err) {
-        error(err.message);
+        print(`${err.name}: ${err.message}\n`);
         return;
     }
 
     ans = _ans;
 
-    if (_ans === undefined && libs.last(cqConsole._messages).direction === LEFT) {
-        cqConsole.addMsg(LEFT, '', '\n');
+    if (_ans === undefined
+        && (cqConsole._messages.length === 0 || libs.last(cqConsole._messages).direction === LEFT)) {
+        print();
         return;
     }
 
-    cqConsole.addMsg(LEFT, '', `${String(_ans).replace(/\n/g, ' ')}\n\n`);
+    print(`${String(_ans).replace(/\n/g, ' ')}\n`);
 }
 
 // view
@@ -98,8 +99,8 @@ function storeConfig() {
     localStorage.recents_str = recents_str;
 }
 
-export function reset(_ws_host: string, _token: string, _recents = DEFAULT_RECENTS) {
-    window.location.href = `?ws_host=${_ws_host}&token=${_token}&recents=${_recents}`;
+export function reset(w = DEFAULT_WS_HOST, t = DEFAULT_TOKEN, r = DEFAULT_RECENTS) {
+    window.location.href = `?ws_host=${w}&token=${t}&recents=${r}`;
 }
 
 // properties
@@ -190,6 +191,14 @@ export function chooseContactBySearch(event: React.KeyboardEvent) {
 }
 
 // logging
+export function print(line = '') {
+    cqConsole.addMsg(LEFT, '', line + '\n');
+}
+
+export function clr() {
+    cqConsole.clear(5);
+}
+
 export let level: LogLevel = INFO;
 
 export function setLogLevel(_level: LogLevel) {
@@ -201,7 +210,7 @@ export function log(_level: LogLevel, msg: any) {
     if (_level < level) {
         return;
     }
-    cqConsole.addMsg(LEFT, '', `[${LEVEL_NAMES[_level]}] ${msg}`);
+    print(`[${LEVEL_NAMES[_level]}] ${msg}`);
 }
 
 export const debug = log.bind(null, DEBUG);
@@ -256,11 +265,10 @@ async function initCqWs() {
             recents._add(_contact);
         }
     } catch (err) {
-        error(`启动 ${PROJECT_NAME} 失败：${err.message}`);
-        info('请确保 cqhttp 服务已开启且服务地址及 token 无误');
+        error(`启动 ${PROJECT_NAME} 失败：${err.message} ，请确保 cqhttp 服务已开启且配置无误`);
         info(`可在此输入 Javascript 代码运行，在 ${mySelf.label} 窗口进行虚拟聊天`);
         info(`输入 reset('${DEFAULT_WS_HOST}', '${DEFAULT_TOKEN}') 可切换 cqhttp 服务器`);
-        info('完整开发手册请点击右上角的“文档”\n\n');
+        info('完整开发手册请点击右上角的“文档”\n');
         if (recents.length === 1) {
             recents._add(mySelf);
         }
@@ -274,7 +282,7 @@ async function initCqWs() {
         + `一共 ${buddies.length} 个好友， ${groups.length} 个群`);
     info(`请在此输入 Javascript 代码运行，在 ${mySelf.label} 窗口进行虚拟聊天，在普通联系人窗口直接聊天`);
     info(`输入 reset('${DEFAULT_WS_HOST}', '${DEFAULT_TOKEN}') 可切换 cqhttp 服务器`);
-    info('完整开发手册请点击右上角的“文档”\n\n');
+    info('完整开发手册请点击右上角的“文档”\n');
     table = recents;
     mySelf.addMsg(RIGHT, mySelf.name, `您好，我是 ${mySelf.name} ，请输入 -joke 等命令进行测试`);
 }

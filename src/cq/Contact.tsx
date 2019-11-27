@@ -12,6 +12,16 @@ export default class Contact {
     idx: number = 0;
     sending: boolean = false;
 
+    clear(i: number = 0) {
+        const n = this._messages.length;
+        this._messages.splice(i, n - i);
+        this.lastModifiedTime = cq.cuid();
+        this.temp = '';
+        this.editingText = this.temp;
+        this.idx = 0;
+        this.sending = false;
+    }
+
     get label() {
         if (this.type > cq.NOTYPE) {
             return `[ ${this.name} ]`;
@@ -19,7 +29,7 @@ export default class Contact {
         return this.name;
     }
 
-    get title() {
+    toString() {
         if (this.type === cq.CONSOLE) {
             return '[ 控制台 ]';
         }
@@ -105,10 +115,10 @@ export default class Contact {
         }
     }
 
-    send = async (text = this.editingText) => {
+    send = async (text = this.editingText): Promise<string | null> => {
         if (!text) {
             cq.popModal('请勿发送空消息', 2000);
-            return;
+            return null;
         }
 
         if (this.type === cq.CONSOLE) {
@@ -118,7 +128,7 @@ export default class Contact {
             }
             this.addMsg(cq.RIGHT, '', `>>> ${text}`);
             cq._eval(text);
-            return;
+            return null;
         }
 
         if (this.type === cq.MYSELF) {
@@ -129,12 +139,12 @@ export default class Contact {
                 console.error(err);
                 cq.popModal(`handler.onMessage 出错：${err.message}`);
             }
-            return;
+            return null;
         }
 
         if (this.type === cq.VIRTUAL_BUDDY) {
             cq.mySelf.addMsg(cq.RIGHT, cq.mySelf.name, text);
-            return;
+            return null;
         }
 
         while (this.sending) {
@@ -161,12 +171,14 @@ export default class Contact {
         } catch (err) {
             console.error(err);
             this.sending = false;
-            cq.popModal(`发送${cq.TABLE_NAMES[this.type]}消息失败：${err.message}`);
-            return;
+            const e = `发送${cq.TABLE_NAMES[this.type]}消息失败：${err.message}`;
+            cq.popModal(e);
+            return e;
         }
 
         this.sending = false;
         this.addMsg(cq.RIGHT, cq.mySelf.name, text);
+        return null;
     }
 
     addMsg(direction: DirectionType, from: string, content: string): IMessage {

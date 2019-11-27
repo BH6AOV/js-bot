@@ -43,7 +43,7 @@ export function f5() {
 function getQueryParams(qs: string): Readonly<Map<string, string>> {
     const params: Map<string, string> = new Map();
     let tokens: any;
-    const re = /([^=]+)=([^&]*)/g;
+    const re = /([^=&]+)=([^&]*)/g;
 
     qs = qs.substring(1);
     // eslint-disable-next-line
@@ -55,3 +55,7 @@ function getQueryParams(qs: string): Readonly<Map<string, string>> {
 }
 
 export const urlParams = getQueryParams(window.location.search);
+
+export function clearArray(array: any[]) {
+    array.splice(0, array.length);
+}
