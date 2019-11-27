@@ -5,11 +5,11 @@
 
 js-bot 控制台模式效果如下：
 
-![console-mode.png](./pictures/console-mode.png)
+![console-mode.png](https://raw.githubusercontent.com/pandolia/js-bot/master/pictures/console-mode.png)
 
 聊天模式效果如下：
 
-![chat-mode.png](./pictures/chat-mode.png)
+![chat-mode.png](https://raw.githubusercontent.com/pandolia/js-bot/master/pictures/chat-mode.png)
 
 二、系统需求
 ------------
