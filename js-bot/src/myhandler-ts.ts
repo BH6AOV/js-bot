@@ -1,20 +1,15 @@
-// API 文档地址： https://github.com/pandolia/js-bot
+import * as cq from './cq/CqStore';
 
-import Contact from './cq/Contact';
-import cq from './cq';
-
-export default {
-    onMessage: async (contact: Contact, message: IMessage) => {
-        if (message.content !== '-joke') {
-            return;
-        }
-
-        const joke = await cq.ai.joke();
-        await contact.send(joke);
-        cq.popModal('发送笑话成功.');
-    },
-
-    onCqEvent: async (data: any) => {
+export async function onMessage(contact: cq.Contact, message: cq.IMessage) {
+    if (message.content !== '-joke') {
         return;
-    },
-};
+    }
+
+    const joke = await cq.ai.joke();
+    await contact.send(joke);
+    cq.popModal('发送笑话成功.');
+}
+
+export async function onCqEvent(data: any) {
+    return;
+}

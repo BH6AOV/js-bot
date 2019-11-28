@@ -55,13 +55,15 @@ async function onWsData(event: any) {
 }
 
 async function onMessageData(data: any): Promise<boolean> {
-    const { message_type, user_id, group_id, sender, raw_message } = data;
+    const { message_type, user_id, group_id, sender, raw_message, message_id } = data;
 
     if (message_type === 'private') {
         var from = sender.remark || sender.nickname;
         var contact = cq.buddies._getOrInsert(String(user_id), from);
+        var memberQQ = '';
     } else if (message_type === 'group') {
-        from = sender.card || sender.nickname || sender.user_id;
+        from = sender.card || sender.nickname || String(sender.user_id);
+        memberQQ = String(sender.user_id);
         const groupQQ = String(group_id);
         const _contact = cq.groups.get(groupQQ);
         if (_contact) {
@@ -80,7 +82,7 @@ async function onMessageData(data: any): Promise<boolean> {
         return false;
     }
 
-    const message = contact.addMsg(cq.LEFT, from, raw_message);
+    const message = contact.addMsg(cq.LEFT, from, raw_message, String(message_id), memberQQ);
     try {
         await cq.handler.onMessage(contact, message);
     } catch (err) {

@@ -2,21 +2,35 @@ import Contact from './Contact';
 import * as cq from './CqStore';
 
 export default class ContactTable {
-    readonly type: ContactType;
+    // 类型 BUDDY/GROUP/NOTYPE 代表 好友列表/群列表/最近联系人列表
+    readonly type: cq.ContactType;
+
+    // 名称
+    get name() { return cq.TABLE_NAMES[this.type]; }
+
+    // 分别以数组和字典保存所有联系人，请勿访问这两个属性
     private readonly _list: Contact[] = [];
     private readonly _dict: Map<string, Contact> = new Map();
+
+    // 联系人个数
+    get length() { return this._list.length; }
+
+    // 遍历、查找联系人
     readonly map = this._list.map.bind(this._list);
     readonly forEach = this._list.forEach.bind(this._list);
     readonly filter = this._list.filter.bind(this._list);
     readonly find = this._list.find.bind(this._list);
-    lastModifiedTime: string = cq.cuid();
-    get length() { return this._list.length; }
-    get name() { return cq.TABLE_NAMES[this.type]; }
 
-    constructor(type: ContactType) {
+    lastModifiedTime: string = cq.cuid();
+
+    constructor(type: cq.ContactType) {
         this.type = type;
     }
 
+    // 查询联系人
+    // get('3497303033') 返回 qq 为 '3497303033' 的 Contact 对象
+    // get(0) 返回第一个 Contact 对象
+    // 联系人不存在时返回 undefined
     get(qqOrIndex: string | number): Contact | undefined {
         if (typeof(qqOrIndex) === 'string') {
             return this._dict.get(qqOrIndex);

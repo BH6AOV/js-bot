@@ -13,7 +13,7 @@ export const DOWN_KEY = 40;
 let _i = 0;
 
 export function cuid() {
-    return String(_i++);
+    return 'cuid-' + String(++_i);
 }
 
 export function remove<T>(array: T[], el: T): number {

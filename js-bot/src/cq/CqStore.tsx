@@ -4,45 +4,106 @@ import { api as _api, connectEventWs } from './Ws';
 import * as libs from '../common';
 import * as _ai from '../ai';
 
-// constants
+// 常量
+
+// 联系人类型： 好友/群/无/控制台/自己/虚拟好友
 export const BUDDY = 0;
 export const GROUP = 1;
 export const NOTYPE = 2;
 export const CONSOLE = 3;
 export const MYSELF = 4;
 export const VIRTUAL_BUDDY = 5;
+
+// 联系人列表名称，内部联系人名称
 export const TABLE_NAMES = [ '好友', '群', '最近' ];
 export const CQ_CONSOLE_NAME = 'CqConsole';
 export const DEFALUT_MY_SELF_NAME = 'MySelf';
 export const VIRTUAL_BUDDY_NAME = '虚拟好友';
+
+// 消息方向： LEFT 代表消息画在左边， RIGHT 代表消息画在右边
 export const LEFT = 0;
 export const RIGHT = 1;
+
+// 日志级别
 export const DEBUG = 0;
 export const INFO = 1;
 export const WARN = 2;
 export const ERROR = 3;
-export const LEVEL_NAMES = [ 'DEBUG', 'INFO', 'WARN', 'ERROR' ];
-export const MAX_MESSAGES_SIZE = 400;
-export const PROJECT_NAME = process.env.REACT_APP_PROJECT_NAME;
-export const DEFAULT_WS_HOST = process.env.REACT_APP_WS_HOST;
-export const DEFAULT_TOKEN = process.env.REACT_APP_TOKEN;
-export const DEFAULT_RECENTS = process.env.REACT_APP_RECENTS;
-export const GITHUB_URL = `https://github.com/pandolia/${PROJECT_NAME}`;
 
-// libs
+// 日志级别名称
+export const LEVEL_NAMES = [ 'DEBUG', 'INFO', 'WARN', 'ERROR' ];
+
+// 环境（见 .env 文件）：项目名称，github 地址，cq-websocket 参数，最近联系人，每个联系人保存的消息总数最大值
+export const PROJECT_NAME = process.env.REACT_APP_PROJECT_NAME!;
+export const GITHUB_URL = process.env.REACT_APP_GITHUB_URL!;
+export const DEFAULT_WS_HOST = process.env.REACT_APP_WS_HOST!;
+export const DEFAULT_TOKEN = process.env.REACT_APP_TOKEN!;
+export const DEFAULT_RECENTS = process.env.REACT_APP_RECENTS!;
+export const MAX_MESSAGES_SIZE = parseInt(process.env.REACT_APP_MAX_MESSAGES_SIZE!, 10);
+
+// 类型及接口
+
+// 消息方向： LEFT / RIGHT
+export type DirectionType = 0 | 1;
+
+// 消息接口（ onMessage 的第二个参数为 IMessage 对象）
+export interface IMessage {
+    // 消息方向
+    direction: DirectionType;
+
+    // 消息发送方名称
+    from: string;
+
+    // 消息内容
+    content: string;
+
+    // 群成员账号（仅群消息时有效）
+    memberQQ: string;
+
+    // 消息 id
+    id: string;
+
+    // 消息发送或接收时间
+    time: Date;
+}
+
+// 联系人类型： BUDDY / GROUP / NOTYPE / CONSOLE / MYSELF / VIRTUAL_BUDDY
+export type ContactType = 0 | 1 | 2 | 3 | 4 | 5;
+
+// 日志级别： DEBUG / INFO / WARN / ERROR
+export type LogLevel = 0 | 1 | 2 | 3;
+
+// 事件处理类
+export interface IHandler {
+    // 好友消息或群消息事件处理函数
+    onMessage: (c: Contact, m: IMessage) => any;
+
+    // 其他事件处理函数，事件列表及事件参数见： https://cqhttp.cc/docs/4.12/#/Post?id=事件列表
+    onCqEvent: (data: any) => any;
+}
+
+export type Contact = Contact;
+
+export type ContactTable = ContactTable;
+
+// 工具函数
 export const sleep = libs.sleep;
 export const cuid = libs.cuid;
 export const nullFunc = libs.nullFunc;
 
-// ai
+// ai 库，见 src/ai/index.tsx
 export const ai = _ai;
 
-// api
+// 调用 cqhttp 的 api ，见： https://cqhttp.cc/docs/4.12/#/API?id=api-列表
+// 调用示例： await cq.api('send_like', { user_id: 158297369 });
+// 注意事项： 第一个参数为 cqhttp-api 名称，前面不含斜杠 "/"
+//           第二个参数为 cqhttp-api 参数，与用户 id 相关的字段全部采用 number 类型
 export const api = _api;
 
-// eval
+// 控制台上次命令运行结果
 export let ans = null;
 
+// 执行控制台命令
 export async function _eval(s: string) {
     let _ans = undefined;
     try {
@@ -63,23 +124,24 @@ export async function _eval(s: string) {
     print(`${String(_ans).replace(/\n/g, ' ')}\n`);
 }
 
-// view
+// 更新视图
 export let update: () => void;
 
-// handler
+// 事件处理对象
 export let handler: IHandler;
 
-// init
-export function _init(f: () => void, h: IHandler | null = null): Promise<any> {
+// 初始化
+export function init(f: () => void, h: IHandler | null = null): Promise<any> {
     update = f;
-    handler = h || {
-        onMessage: nullFunc,
-        onCqEvent: nullFunc,
+    handler = {
+        onMessage: h ? h.onMessage : nullFunc,
+        onCqEvent: h ? h.onCqEvent : nullFunc,
     };
     return initCqWs();
 }
 
-// configurations
+// cqhttp websocket 服务地址、token、最近联系人
+
 export const ws_host = libs.urlParams.get('ws_host')
     || localStorage.ws_host || DEFAULT_WS_HOST;
 
@@ -103,20 +165,22 @@ export function reset(w = DEFAULT_WS_HOST, t = DEFAULT_TOKEN, r = DEFAULT_RECENT
     window.location.href = `?ws_host=${w}&token=${t}&recents=${r}`;
 }
 
-// properties
+// 好友列表/群列表/最近联系人列表
 export const buddies = new ContactTable(BUDDY);
 export const groups = new ContactTable(GROUP);
 export const recents = new ContactTable(NOTYPE);
 export const tables = [ buddies, groups, recents ];
+
+// 内部联系人
 export const cqConsole = new Contact(CONSOLE, String(CONSOLE), CQ_CONSOLE_NAME);
 export const mySelf = new Contact(MYSELF, String(MYSELF), DEFALUT_MY_SELF_NAME);
 export const virtualBuddy = new Contact(VIRTUAL_BUDDY, String(VIRTUAL_BUDDY), VIRTUAL_BUDDY_NAME);
 
-// state
+// 状态变量： 当前联系人列表，当前联系人，搜索框文本，模态信息框文本
 export let table = recents;
 export let contact = cqConsole;
-export let modalMsg = '';
 export let searchText = '';
+export let modalMsg = '';
 
 export function setTableByName(name: string) {
     if (name === table.name) {
@@ -190,15 +254,18 @@ export function chooseContactBySearch(event: React.KeyboardEvent) {
     update();
 }
 
-// logging
+// 打印
 export function print(line = '') {
     cqConsole.addMsg(LEFT, '', line + '\n');
 }
 
+// 清屏
 export function clr() {
     setTimeout(() => { cqConsole.clear(5); update(); }, 10);
     return '';
 }
+
+// 日志
 
 export let level: LogLevel = INFO;
 
@@ -219,6 +286,7 @@ export const info = log.bind(null, INFO);
 export const warn = log.bind(null, WARN);
 export const error = log.bind(null, ERROR);
 
+// 显示致命错误模块信息框，点击关闭之后退出并重启 js-bot
 let aborted: boolean = false;
 
 export function abort(msg: string) {

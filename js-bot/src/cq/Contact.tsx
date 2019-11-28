@@ -2,10 +2,16 @@ import { api } from './Ws';
 import * as cq from './CqStore';
 
 export default class Contact {
-    type: ContactType;
+    // 类型 BUDDY/GROUP/VIRTUAL_BUDDY ，代表 好友/群/虚拟好友
+    type: cq.ContactType;
+
+    // 账号
     qq: string;
+
+    // 名称
     name: string;
-    _messages: IMessage[] = [];
+
+    _messages: cq.IMessage[] = [];
     lastModifiedTime: string = cq.cuid();
     temp: string = '';
     editingText: string = this.temp;
@@ -53,13 +59,13 @@ export default class Contact {
         return this.type > cq.NOTYPE ? '' : cq.mySelf.name;
     }
 
-    constructor(type: ContactType, qq: string, name: string) {
+    constructor(type: cq.ContactType, qq: string, name: string) {
         this.type = type;
         this.qq = qq;
         this.name = name;
     }
 
-    changeText = (text: string) => {
+    setEditingText = (text: string) => {
         if (text === this.editingText) {
             return;
         }
@@ -78,7 +84,7 @@ export default class Contact {
 
         const step = isUp ? -1 : 1;
         const direction = (this.type !== cq.MYSELF) ? cq.RIGHT : cq.LEFT;
-        this._messages.push({ direction, id: '', from: '', content: this.temp });
+        this._messages.push({ direction, content: this.temp } as any);
         for (let i = this.idx + step; ; i += step) {
             if (i === -1) {
                 i = n;
@@ -115,6 +121,7 @@ export default class Contact {
         }
     }
 
+    // 向本联系人发送消息，发送成功返回 null ，发送失败则抛出 Error 错误
     send = async (text = this.editingText): Promise<null> => {
         if (!text) {
             cq.popModal('请勿发送空消息', 2000);
@@ -167,7 +174,7 @@ export default class Contact {
         }
 
         try {
-            api('send_msg', data);
+            var { message_id } = await api('send_msg', data);
         } catch (err) {
             console.error(err);
             this.sending = false;
@@ -177,11 +184,12 @@ export default class Contact {
         }
 
         this.sending = false;
-        this.addMsg(cq.RIGHT, cq.mySelf.name, text);
+        this.addMsg(cq.RIGHT, this.name, text, String(message_id));
         return null;
     }
 
-    addMsg(direction: DirectionType, from: string, content: string): IMessage {
+    addMsg(direction: cq.DirectionType, from: string,
+           content: string, id = cq.cuid(), memberQQ = ''): cq.IMessage {
         if (this.type === cq.VIRTUAL_BUDDY) {
             throw new Error('Try to add message to a virtual buddy');
         }
@@ -199,7 +207,7 @@ export default class Contact {
             this.idx++;
         }
 
-        const message = { direction, id: cq.cuid(), from, content };
+        const message = { direction, from, content, id, memberQQ, time: new Date() };
         this._messages.push(message);
         this.lastModifiedTime = cq.cuid();
 

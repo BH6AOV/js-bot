@@ -4,22 +4,21 @@
 
 import cq from './cq';
 
-export default {
-    onMessage: function (contact, message) {
-        if (message.content !== '-joke') {
-            return;
-        }
-    
-        return cq.ai.joke()
-            .then(function (joke) {
-                return contact.send('笑话: ' + joke);
-            })
-            .then(function () {
-                cq.popModal('发送笑话成功.');
-            });
-    },
-
-    onCqEvent: function (data) {
+export function onMessage (contact, message) {
+    if (message.content !== '-joke') {
         return;
-    },
-};
+    }
+
+    return cq.ai.joke()
+        .then(function (joke) {
+            return contact.send('笑话: ' + joke);
+        })
+        .then(function () {
+            cq.popModal('发送笑话成功.');
+        });
+}
+
+// eslint-disable-next-line no-unused-vars
+export function onCqEvent(data) {
+    return;
+}

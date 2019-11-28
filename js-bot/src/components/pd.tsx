@@ -74,7 +74,7 @@ export class ButtonGroup extends PureComponent<IButtonGroupProps> {
 
 interface IProps {
     content: JSX.Element | string | null | undefined;
-    onOk: Action;
+    onOk: () => any;
 }
 
 export class Modal extends PureComponent<IProps> {

@@ -1,14 +1,14 @@
 import React, { Component, PureComponent } from 'react';
 import { cuid, ENTER_KEY, UP_KEY, DOWN_KEY } from '../common';
-import Contact from '../cq/Contact';
-import ContactTable from '../cq/ContactTable';
-import cq from '../cq';
 import { ButtonGroup, Modal, TextDiv, Button, targetLinkAttr } from './pd';
+import * as cq from '../cq/CqStore';
 import './CqPanel.css';
 
-export default class CqPanel extends Component<{handler: IHandler}> {
+(window as any).cq = cq;
+
+export default class CqPanel extends Component<{ handler: cq.IHandler }> {
     componentWillMount() {
-        cq._init(this.forceUpdate.bind(this), this.props.handler);
+        cq.init(this.forceUpdate.bind(this), this.props.handler);
     }
 
     render() {
@@ -49,7 +49,7 @@ export default class CqPanel extends Component<{handler: IHandler}> {
                     value={cq.contact.editingText}
                     updateTime={cq.contact.lastModifiedTime}
                     disabled={cq.contact.sending}
-                    onChange={cq.contact.changeText}
+                    onChange={cq.contact.setEditingText}
                     onRoll={cq.contact._rollText}
                     onSubmit={cq.contact.send}
                 />
@@ -62,15 +62,15 @@ export default class CqPanel extends Component<{handler: IHandler}> {
     }
 }
 
-interface IProps2 {
-    table: ContactTable;
+interface IPropsContactList {
+    table: cq.ContactTable;
     updatetime: number | string;
     searchText: string;
-    contact: Contact;
-    onChange: Func<string>;
+    contact: cq.Contact;
+    onChange: (t: string) => any;
 }
 
-class ContactList extends PureComponent<IProps2> {
+class ContactList extends PureComponent<IPropsContactList> {
     render() {
         const { table, searchText, contact, onChange } = this.props;
         const contacts = searchText
@@ -88,12 +88,12 @@ class ContactList extends PureComponent<IProps2> {
     }
 }
 
-interface IProps3 {
-    readonly messages: IMessage[];
+interface IPropsMessageList {
+    readonly messages: cq.IMessage[];
     readonly updatetime: number | string;
 }
 
-class MessageList extends PureComponent<IProps3> {
+class MessageList extends PureComponent<IPropsMessageList> {
     componentDidMount() {
         this.scrollToButtom();
     }
@@ -122,11 +122,7 @@ class MessageList extends PureComponent<IProps3> {
     }
 }
 
-interface IProps4 {
-    readonly message: IMessage;
-}
-
-class MessageItem extends PureComponent<IProps4> {
+class MessageItem extends PureComponent<{ message: cq.IMessage }> {
     render() {
         const { from, content, direction } = this.props.message;
         const className = `cq-message-item${direction ? ' cq-message-item-right' : ''}`;
@@ -134,16 +130,16 @@ class MessageItem extends PureComponent<IProps4> {
     }
 }
 
-interface IProps5 {
+interface IPropsMessageInput {
     readonly value: string;
     readonly updateTime: string;
     readonly disabled?: boolean | undefined;
-    readonly onChange: Func<string>;
-    readonly onSubmit: Action;
-    readonly onRoll: Func<boolean>;
+    readonly onChange: (t: string) => any;
+    readonly onSubmit: () => any;
+    readonly onRoll: (isUp: boolean) => any;
 }
 
-class MessageInput extends PureComponent<IProps5> {
+class MessageInput extends PureComponent<IPropsMessageInput> {
     id = cuid();
 
     componentDidMount() {

@@ -133,24 +133,21 @@ onMessage 函数中：第一个参数 contact 是一个 Contact 对象 代表此
 开发和扩展 js-bot 时，修改 src/myhandler-ts.ts 文件就可以了，在此文件中导出两个事件函数：
 
 ```typescript
-import Contact from './cq/Contact';
-import cq from './cq';
+import * as cq from './cq/CqStore';
 
-export default {
-    onMessage: async (contact: Contact, message: IMessage) => {
-        if (message.content !== '-joke') {
-            return;
-        }
-
-        const joke = await cq.ai.joke();
-        await contact.send(joke);
-        cq.popModal('发送笑话成功.');
-    },
-
-    onCqEvent: async (data: any) => {
+export async function onMessage(contact: cq.Contact, message: cq.IMessage) {
+    if (message.content !== '-joke') {
         return;
-    },
-};
+    }
+
+    const joke = await cq.ai.joke();
+    await contact.send(joke);
+    cq.popModal('发送笑话成功.');
+}
+
+export async function onCqEvent(data: any) {
+    return;
+}
 ```
 
 如果不会 Typescript ，也可以用 Javascript 开发，修改 src/myhandler-js.js 文件就可以了，需要在 src/index.tsx 文件中改为：**import handler from './myhandler.js'** 。
@@ -186,7 +183,10 @@ export const CONSOLE = 3;
 export const MYSELF = 4;
 export const VIRTUAL_BUDDY = 5;
 
-// 消息方向，LEFT 代表消息画在左边，RIGHT 代表消息画在右边
+// 联系人列表名称
+export const TABLE_NAMES = [ '好友', '群', '最近' ];
+
+// 消息方向： LEFT 代表消息画在左边， RIGHT 代表消息画在右边
 export const LEFT = 0;
 export const RIGHT = 1;
 
@@ -196,48 +196,58 @@ export const INFO = 1;
 export const WARN = 2;
 export const ERROR = 3;
 
-// 每个联系人保存的消息总数最大值
-export const MAX_MESSAGES_SIZE = 400;
+// 日志级别名称
+export const LEVEL_NAMES = [ 'DEBUG', 'INFO', 'WARN', 'ERROR' ];
 
-// 环境（在 .env 文件内定义），项目名称， CQ-WEBSOCKET 参数， github 地址
+// 环境（见 .env 文件）：项目名称，github 地址，cq-websocket 参数，最近联系人，每个联系人保存的消息总数最大值
 export const PROJECT_NAME: string;
+export const GITHUB_URL: string;
 export const DEFAULT_WS_HOST: string;
 export const DEFAULT_TOKEN: string;
 export const DEFAULT_RECENTS: string;
-export const GITHUB_URL: string;
+export const MAX_MESSAGES_SIZE: number;
 ```
 
-#### 2. 类型及接口（src/types.d.ts）
+#### 2. 类型及接口（src/cq/CqStore.tsx）
 
 ```typescript
-// 消息方向 LEFT/RIGHT
-type DirectionType = 0 | 1;
+// 消息方向： LEFT / RIGHT
+export type DirectionType = 0 | 1;
 
 // 消息接口（ onMessage 的第二个参数为 IMessage 对象）
-interface IMessage {
-    // 消息 id
-    readonly id: string;
-
+export interface IMessage {
     // 消息方向
-    readonly direction: DirectionType;
+    direction: DirectionType;
 
     // 消息发送方名称
-    readonly from: string;
+    from: string;
 
     // 消息内容
-    readonly content: string;
+    content: string;
+
+    // 群成员账号（仅群消息时有效）
+    memberQQ: string;
+
+    // 消息 id
+    id: string;
+
+    // 消息发送或接收时间
+    time: Date;
 }
 
-// 联系人类型 BUDDY ~ VIRTUAL_BUDDY
-type ContactType = 0 | 1 | 2 | 3 | 4 | 5;
+// 联系人类型： BUDDY / GROUP / NOTYPE / CONSOLE / MYSELF / VIRTUAL_BUDDY
+export type ContactType = 0 | 1 | 2 | 3 | 4 | 5;
 
-// 日志级别 DEBUG ~ ERROR
-type LogLevel = 0 | 1 | 2 | 3;
+// 日志级别： DEBUG / INFO / WARN / ERROR
+export type LogLevel = 0 | 1 | 2 | 3;
 
-// 事件处理接口
-interface IHandler {
-    onMessage: (c: Contact, m: Message) => any,
-    onCqEvent: (data: any) => any,
+// 事件处理类
+export interface IHandler {
+    // 好友消息或群消息事件处理函数
+    onMessage: (c: Contact, m: IMessage) => any;
+
+    // 其他事件处理函数，事件列表及事件参数见： https://cqhttp.cc/docs/4.12/#/Post?id=事件列表
+    onCqEvent: (data: any) => any;
 }
 ```
 
@@ -331,10 +341,13 @@ export const token: string;
 // ai （见 src/ai/index.tsx 目前只有 ai.joke ）
 export const ai;
 
-// api
+// 调用 cqhttp 的 api ，见： https://cqhttp.cc/docs/4.12/#/API?id=api-列表
+// 调用示例： await cq.api('send_like', { user_id: 158297369 });
+// 注意事项： 第一个参数为 cqhttp-api 名称，前面不含斜杠 "/"
+//           第二个参数为 cqhttp-api 参数，与用户 id 相关的字段全部采用 number 类型
 export function api(action: string, params: any = null): Promise<any> { /* */ }
 
-// 退出并重启 js-bot
+// 显示致命错误模块信息框，点击关闭之后退出并重启 js-bot
 export function abort(msg: string) { /* */ }
 
 // 重置 cqhttp 服务地址
