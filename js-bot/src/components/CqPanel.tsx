@@ -7,8 +7,12 @@ import './CqPanel.css';
 (window as any).cq = cq;
 
 export default class CqPanel extends Component<{ handler: cq.IHandler }> {
-    componentWillMount() {
-        cq.init(this.forceUpdate.bind(this), this.props.handler);
+    componentDidMount() {
+        cq.onMounted(this.forceUpdate.bind(this), this.props.handler);
+    }
+
+    componentWillUnmount() {
+
     }
 
     render() {

@@ -1,6 +1,6 @@
 import Contact from './Contact';
 import ContactTable from './ContactTable';
-import { api as _api, connectEventWs } from './Ws';
+import { api as _api, openEventWs, closeEventWs } from './Ws';
 import * as libs from '../common';
 import * as _ai from '../ai';
 
@@ -130,14 +130,22 @@ export let update: () => void;
 // 事件处理对象
 export let handler: IHandler;
 
-// 初始化
-export function init(f: () => void, h: IHandler | null = null): Promise<any> {
+// 组件加载后
+export async function onMounted(f: () => void, h: IHandler | null = null): Promise<any> {
     update = f;
     handler = {
         onMessage: h ? h.onMessage : nullFunc,
         onCqEvent: h ? h.onCqEvent : nullFunc,
     };
     return initCqWs();
+}
+
+// 组件卸载前
+export function beforeUnmount() {
+    update = nullFunc;
+    handler.onMessage = nullFunc;
+    handler.onCqEvent = nullFunc;
+    closeEventWs();
 }
 
 // cqhttp websocket 服务地址、token、最近联系人
@@ -175,6 +183,8 @@ export const tables = [ buddies, groups, recents ];
 export const cqConsole = new Contact(CONSOLE, String(CONSOLE), CQ_CONSOLE_NAME);
 export const mySelf = new Contact(MYSELF, String(MYSELF), DEFALUT_MY_SELF_NAME);
 export const virtualBuddy = new Contact(VIRTUAL_BUDDY, String(VIRTUAL_BUDDY), VIRTUAL_BUDDY_NAME);
+
+recents._add(cqConsole);
 
 // 状态变量： 当前联系人列表，当前联系人，搜索框文本，模态信息框文本
 export let table = recents;
@@ -296,10 +306,6 @@ export function abort(msg: string) {
 
 // 连接 cqhttp 服务
 async function initCqWs() {
-    recents._add(cqConsole);
-
-    await sleep(10);
-
     info(`欢迎使用 js-bot ，cqhttp 服务地址：${ws_host}`);
 
     try {
@@ -322,7 +328,7 @@ async function initCqWs() {
         table = groups;
         update();
 
-        connectEventWs();
+        openEventWs();
 
         for (let c of recents_str.split(',')) {
             c = c.trim();

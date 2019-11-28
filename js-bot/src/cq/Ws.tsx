@@ -22,15 +22,33 @@ export function api(action: string, params: any = null): Promise<any> {
 
 let ws: WebSocket | null = null;
 
-const abort1 = () => cq.abort('WebSocket Event 服务非正常关闭');
+const abort1 = async () => {
+    await cq.sleep(100);
+    cq.abort('WebSocket Event 服务非正常关闭');
+};
 
-const abort2 = () => cq.abort('WebSocket Event 服务连接错误');
+const abort2 = () => async () => {
+    await cq.sleep(100);
+    cq.abort('WebSocket Event 服务连接错误');
+};
 
-export function connectEventWs() {
+export function openEventWs() {
     ws = new WebSocket(cq.wsUrl);
     ws.addEventListener('close', abort1);
     ws.addEventListener('error', abort2);
     ws.addEventListener('message', onWsData);
+}
+
+export function closeEventWs() {
+    if (ws === null) {
+        return;
+    }
+
+    ws.removeEventListener('close', abort1);
+    ws.removeEventListener('error', abort2);
+    ws.removeEventListener('message', onWsData);
+    ws.close();
+    ws = null;
 }
 
 async function onWsData(event: any) {
