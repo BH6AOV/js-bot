@@ -1,8 +1,6 @@
-// API 文档地址： https://github.com/pandolia/coolq-react
+// 如果要使用本文件，请在 index.tsx 文件中改为： import handler from './myhandler-js.js'
 
-// js 版 QQ 机器人程序，如果要使用本文件，请在 index.tsx 文件中改为： import handler from './myhandler.js'
-
-import cq from './cq';
+import * as cq from './cq/CqStore';
 
 export function onMessage (contact, message) {
     if (message.content !== '-joke') {

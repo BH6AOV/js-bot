@@ -150,7 +150,7 @@ export async function onCqEvent(data: any) {
 }
 ```
 
-如果不会 Typescript ，也可以用 Javascript 开发，修改 src/myhandler-js.js 文件就可以了，需要在 src/index.tsx 文件中改为：**import handler from './myhandler.js'** 。
+如果不会 Typescript ，也可以用 Javascript 开发，修改 src/myhandler-js.js 文件就可以了，需要在 src/index.tsx 文件中改为：**import handler from './myhandler-js.js'** 。
 
 本项目中的其他文件，建议不要修改，如果确实需要修改，请在 [项目 github 主页](https://github.com/pandolia/js-bot) 上发 issue 或 pull-request 。
 
@@ -199,7 +199,7 @@ export const ERROR = 3;
 // 日志级别名称
 export const LEVEL_NAMES = [ 'DEBUG', 'INFO', 'WARN', 'ERROR' ];
 
-// 环境（见 .env 文件）：项目名称，github 地址，cq-websocket 参数，最近联系人，每个联系人保存的消息总数最大值
+// 环境（见 .env 文件）：项目名称， github 地址， cq-websocket 参数，最近联系人，每个联系人保存的消息总数最大值
 export const PROJECT_NAME: string;
 export const GITHUB_URL: string;
 export const DEFAULT_WS_HOST: string;
