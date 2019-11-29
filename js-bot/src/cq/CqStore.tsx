@@ -39,7 +39,7 @@ export const GITHUB_URL = process.env.REACT_APP_GITHUB_URL!;
 export const DEFAULT_WS_HOST = process.env.REACT_APP_WS_HOST!;
 export const DEFAULT_TOKEN = process.env.REACT_APP_TOKEN!;
 export const DEFAULT_RECENTS = process.env.REACT_APP_RECENTS!;
-export const MAX_MESSAGES_SIZE = parseInt(process.env.REACT_APP_MAX_MESSAGES_SIZE!, 10);
+export const MAX_MESSAGES_SIZE = 8; // parseInt(process.env.REACT_APP_MAX_MESSAGES_SIZE!, 10);
 
 // 类型及接口
 
@@ -225,6 +225,7 @@ export async function showModal(msg: any) {
 
     modalMsg = msg;
     update();
+    return null;
 }
 
 export function closeModal() {
@@ -233,11 +234,13 @@ export function closeModal() {
     if (aborted) {
         libs.f5();
     }
+    return null;
 }
 
 export function popModal(msg: any, t = 2500) {
     showModal(msg);
     setTimeout(closeModal, t);
+    return null;
 }
 
 export function setSearchText(event: any) {
@@ -271,9 +274,12 @@ export function print(line = '') {
 
 // 清屏
 export function clr() {
-    setTimeout(() => { cqConsole.clear(5); update(); }, 10);
+    setImmediate(() => { cqConsole.clear(); update(); });
     return '';
 }
+
+// 清屏和滚动消息时需要此数值
+export let numWelcomeLogs: number;
 
 // 日志
 
@@ -344,6 +350,7 @@ async function initCqWs() {
         info(`可在此输入 Javascript 代码运行，在 ${mySelf.label} 窗口进行虚拟聊天`);
         info(`输入 reset('${DEFAULT_WS_HOST}', '${DEFAULT_TOKEN}') 可切换 cqhttp 服务器`);
         info('完整开发手册请点击右上角的“文档”\n');
+        numWelcomeLogs = cqConsole._messages.length;
         if (recents.length === 1) {
             recents._add(mySelf);
         }
@@ -358,6 +365,7 @@ async function initCqWs() {
     info(`请在此输入 Javascript 代码运行，在 ${mySelf.label} 窗口进行虚拟聊天，在普通联系人窗口直接聊天`);
     info(`输入 reset('${DEFAULT_WS_HOST}', '${DEFAULT_TOKEN}') 可切换 cqhttp 服务器`);
     info('完整开发手册请点击右上角的“文档”\n');
+    numWelcomeLogs = cqConsole._messages.length;
     table = recents;
     mySelf.addMsg(RIGHT, mySelf.name, `您好，我是 ${mySelf.name} ，请输入 -joke 等命令进行测试`);
 }

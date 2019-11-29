@@ -18,13 +18,14 @@ export default class Contact {
     idx: number = 0;
     sending: boolean = false;
 
-    clear(i: number = 0) {
+    clear() {
+        const i = (this.type === cq.CONSOLE) ? cq.numWelcomeLogs : 0;
         const n = this._messages.length;
         this._messages.splice(i, n - i);
         this.lastModifiedTime = cq.cuid();
         this.temp = '';
         this.editingText = this.temp;
-        this.idx = 0;
+        this.idx = i;
         this.sending = false;
     }
 
@@ -124,8 +125,9 @@ export default class Contact {
     // 向本联系人发送消息，发送成功返回 null ，发送失败则抛出 Error 错误
     send = async (text = this.editingText): Promise<null> => {
         if (!text) {
-            cq.popModal('请勿发送空消息', 2000);
-            return null;
+            const e = '请勿发送空消息';
+            cq.popModal(e, 2000);
+            throw new Error(e);
         }
 
         if (this.type === cq.CONSOLE) {
@@ -195,9 +197,20 @@ export default class Contact {
         }
 
         if (this._messages.length === cq.MAX_MESSAGES_SIZE) {
-            this._messages.shift();
-            this.idx--;
-            if (this.idx === -1) {
+            if (this.type === cq.CONSOLE) {
+                var i = cq.numWelcomeLogs;
+                var c = 2;
+                // 至少删除 2 条消息，删除到剩下的第一条消息是发出的消息或消息列表为空为止
+                while ((i + c) < this._messages.length && this._messages[i + c].direction !== cq.RIGHT) {
+                    c++;
+                }
+            } else {
+                i = 0;
+                c = 1;
+            }
+            this._messages.splice(i, c);
+            this.idx -= c;
+            if (this.idx < i) {
                 this.idx = this._messages.length;
                 this.temp = this.editingText;
             }
