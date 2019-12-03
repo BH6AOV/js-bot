@@ -39,11 +39,6 @@ api('send_like', { user_id: 158297369 }).then(() => console.log('ok'));
 
 下载本项目源码，运行 yarn install; yarn start ，修改 src/myhandler.ts 文件。
 
-用户协议及许可
----------------
-
-使用之前请先阅读 [用户协议及许可](./LISENCE)
-
 特别致谢
 --------------
 
