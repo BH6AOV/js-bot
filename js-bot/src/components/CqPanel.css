@@ -6,61 +6,11 @@
     left: 0px;
 }
 
-.cq-table-list {
-    position: absolute;
-    width: 300px;
-    height: 35px;
-    color: rgb(130, 160, 191);
-    background: RGB(232, 236, 239);
-}
-
-.cq-contact-list {
-    position: absolute;
-    top: 35px;
-    width: 300px;
-    height: calc(100% - 72px);
-    border-top: 1px solid;
-    border-bottom: 1px solid;
-    overflow-y: scroll;
-    color: rgb(130, 160, 191);
-    background: RGB(232, 236, 239);
-}
-
-.cq-contact-list .pd-button {
-    width: calc(100% - 15px);
-    height: 30px;
-    padding-left: 15px;
-    font-size: 15px;
-    text-align: left;
-}
-
-.cq-contact-search {
-    position: absolute;
-    bottom: 0px;
-    width: 300px;
-    height: 35px;
-    color: rgb(130, 160, 191);
-    background: RGB(232, 236, 239);
-}
-
-.cq-contact-search input {
-    margin-top: 2px;
-    margin-left: 15px;
-    width: 266px;
-    height: 24px;
-    font-size: 15px;
-    border: 0px;
-    outline: none;
-    text-align: center;
-    color: #2e506b;
-    background: RGB(232, 236, 239);
-}
-
 .cq-label-contact-title {
     position: absolute;
     top: 0px;
-    left: 300px;
-    width: calc(100% - 360px);
+    left: 0px;
+    width: calc(100% - 60px);
     height: 30px;
     padding-top: 5px;
     font-size: 15px;
@@ -92,9 +42,9 @@
 .cq-label-playmode {
     position: absolute;
     bottom: 235px;
-    left: 300px;
+    left: 0px;
     padding-left: 10px;
-    width: 290px;
+    width: 590px;
     padding-top: 5px;
     height: 20px;
     padding-bottom: 5px;
@@ -124,52 +74,10 @@
     background: RGB(245, 245, 245);
 }
 
-.cq-message-list {
-    margin-left: 300px;
-    width: calc(100% - 300px);
-    height: calc(100% - 235px);
-    overflow-y: scroll;
-    color: rgb(130, 160, 191);
-    background: RGB(245, 245, 245);
-}
-
-.cq-message-list .cq-message-item {
-    width: calc(100% - 30px);
-    margin: 10px 15px 20px 15px;
-}
-
-.cq-message-list .cq-message-item span {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 13px;
-    word-break: break-all;
-    color: RGB(178, 178, 178);
-}
-
-.cq-message-list .cq-message-item>div {
-    display: inline-block;
-    padding: 10px;
-    max-width: calc(50% - 40px);
-    border-radius: 4px;
-    font-size: 15px;
-    word-break: break-all;
-    text-align: left;
-    color: BLACK;
-    background: white;
-}
-
-.cq-message-list .cq-message-item-right {
-    text-align: right;
-}
-
-.cq-message-list .cq-message-item-right>div {
-    background: RGB(152,225,101);
-}
-
 .cq-logging-list {
-    margin-left: 300px;
+    margin-left: 0px;
     padding-left: 10px;
-    width: calc(100% - 310px);
+    width: calc(100% - 10px);
     height: calc(100% - 235px);
     overflow-y: scroll;
     overflow-x: hidden;
@@ -190,8 +98,8 @@
 }
 
 .cq-message-input {
-    margin-left: 300px;
-    width: calc(100% - 320px);
+    margin-left: 0px;
+    width: calc(100% - 20px);
     height: 215px;
     padding: 10px;
     background: white;

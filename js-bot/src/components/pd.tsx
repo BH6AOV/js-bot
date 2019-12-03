@@ -37,41 +37,6 @@ export class Button extends PureComponent<IButtonProps> {
     }
 }
 
-interface IButtonGroupProps {
-    className?: string | undefined;
-    names: string[];
-    updatetime?: string | number | undefined;
-    keys?: string[] | undefined;
-    current: string;
-    onChange: (key: string) => void;
-}
-
-export class ButtonGroup extends PureComponent<IButtonGroupProps> {
-    onClick = (event: any) => {
-        const key = event.target.getAttribute('name');
-        const { current, onChange } = this.props;
-        if (key === current) {
-            return;
-        }
-
-        onChange(key);
-    }
-
-    render() {
-        const { className, names, keys, current } = this.props;
-        const { onClick } = this;
-        return (
-            <div className={className}>
-                {(keys || names).map((key, i) => {
-                    const name = names[i];
-                    const clz = (key === current) ? 'pd-button pd-button-active' : 'pd-button';
-                    return <span {...{key, name: key, onClick, className: clz}}>{name}</span>;
-                })}
-            </div>
-        );
-    }
-}
-
 interface IProps {
     content: JSX.Element | string | null | undefined;
     onOk: () => any;
